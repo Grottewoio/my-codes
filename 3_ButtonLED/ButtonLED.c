@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #define ledPin    17  	//define the ledPin
-#define buttonPin 26    //define the buttonPin
+#define buttonPin 18    //define the buttonPin
 
 void  main(void)
 {
