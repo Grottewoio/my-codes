@@ -1,18 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct Node {
-    int data;
+    char *name;
     struct Node *next;
 } Node;
 
-static Node *push_front(Node *head, int value) {
+static char *dup_string(const char *src) {
+    size_t len = strlen(src) + 1;
+    char *copy = malloc(len);
+    if (copy == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+    memcpy(copy, src, len);
+    return copy;
+}
+
+static Node *push_front(Node *head, const char *name) {
     Node *node = malloc(sizeof(Node));
     if (node == NULL) {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-    node->data = value;
+    node->name = dup_string(name);
     node->next = head;
     return node;
 }
@@ -20,7 +32,7 @@ static Node *push_front(Node *head, int value) {
 static void print_list(const char *label, const Node *head) {
     printf("%s: ", label);
     while (head != NULL) {
-        printf("%d", head->data);
+        printf("%s", head->name);
         head = head->next;
         if (head != NULL) {
             printf(" -> ");
@@ -36,8 +48,8 @@ static Node *reverse_list(Node *head) {
     puts("Reversing the linked list step by step:");
     while (curr != NULL) {
         Node *next = curr->next;
-        printf("  visiting node %d: next now points to %s\n",
-               curr->data, prev ? "previous node" : "NULL");
+        printf("  visiting %s: next now points to %s\n",
+               curr->name, prev ? prev->name : "NULL");
         curr->next = prev;
         prev = curr;
         curr = next;
@@ -50,6 +62,7 @@ static Node *reverse_list(Node *head) {
 static void free_list(Node *head) {
     while (head != NULL) {
         Node *next = head->next;
+        free(head->name);
         free(head);
         head = next;
     }
@@ -58,8 +71,10 @@ static void free_list(Node *head) {
 int main(void) {
     Node *head = NULL;
 
-    for (int value = 5; value >= 1; --value) {
-        head = push_front(head, value);
+    const char *people[] = {"Alice", "Bob", "Charlie", "Dana", "Eve"};
+    size_t count = sizeof(people) / sizeof(people[0]);
+    for (size_t i = count; i-- > 0;) {
+        head = push_front(head, people[i]);
     }
 
     print_list("Original list", head);
